@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Gemas - Clash Royale</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #4cc9f0;
+        }
+        
+        h1 {
+            color: #4cc9f0;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            color: #b8b8d1;
+            font-size: 1.2rem;
+        }
+        
+        .card {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(76, 201, 240, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .calculator {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #72efdd;
+        }
+        
+        .rarity-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .rarity-option {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+        }
+        
+        .rarity-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .rarity-option.selected {
+            border-color: #4cc9f0;
+            box-shadow: 0 0 15px rgba(76, 201, 240, 0.5);
+        }
+        
+        .rarity-option.comum { color: #b8b8d1; }
+        .rarity-option.rara { color: #3a86ff; }
+        .rarity-option.épica { color: #8338ec; }
+        .rarity-option.lendária { color: #ffbe0b; }
+        .rarity-option.campeão { color: #fb5607; }
+        
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        input[type="number"] {
+            flex: 1;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #4cc9f0;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.3);
+        }
+        
+        button {
+            padding: 15px 25px;
+            background: linear-gradient(to right, #4cc9f0, #4361ee);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(-1px);
+        }
+        
+        .result {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.2), rgba(76, 201, 240, 0.2));
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .result h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #72efdd;
+        }
+        
+        .gems-count {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #4cc9f0;
+            text-shadow: 0 3px 10px rgba(76, 201, 240, 0.5);
+            margin: 15px 0;
+        }
+        
+        .calculation {
+            font-size: 1.1rem;
+            color: #b8b8d1;
+            margin-bottom: 10px;
+        }
+        
+        .conversion-table {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background-color: rgba(76, 201, 240, 0.2);
+            padding: 15px;
+            text-align: left;
+            color: #4cc9f0;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .rarity-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .badge-comum { background-color: rgba(184, 184, 209, 0.2); }
+        .badge-rara { background-color: rgba(58, 134, 255, 0.2); }
+        .badge-épica { background-color: rgba(131, 56, 236, 0.2); }
+        .badge-lendária { background-color: rgba(255, 190, 11, 0.2); }
+        .badge-campeão { background-color: rgba(251, 86, 7, 0.2); }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #b8b8d1;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .rarity-selector {
+                flex-direction: column;
+            }
+            
+            .gems-count {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-gem"></i> Calculadora de Gemas</h1>
+            <p class="subtitle">Converta cartas desejadas em gemas necessárias no Clash Royale</p>
+        </header>
+        
+        <div class="card">
+            <div class="calculator">
+                <div class="input-group">
+                    <label>Selecione a raridade:</label>
+                    <div class="rarity-selector">
+                        <div class="rarity-option comum" data-rarity="comum">
+                            <i class="fas fa-circle"></i> Comum
+                        </div>
+                        <div class="rarity-option rara selected" data-rarity="rara">
+                            <i class="fas fa-gem"></i> Rara
+                        </div>
+                        <div class="rarity-option épica" data-rarity="épica">
+                            <i class="fas fa-crown"></i> Épica
+                        </div>
+                        <div class="rarity-option lendária" data-rarity="lendária">
+                            <i class="fas fa-star"></i> Lendária
+                        </div>
+                        <div class="rarity-option campeão" data-rarity="campeão">
+                            <i class="fas fa-trophy"></i> Campeão
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Quantidade de cartas desejadas:</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="cardQuantity" min="1" max="10000" value="371" placeholder="Ex: 371">
+                        <button id="calculateBtn">
+                            <i class="fas fa-calculator"></i> Calcular Gemas
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="result" id="result">
+                    <h3>Gemas necessárias:</h3>
+                    <div class="gems-count" id="gemsCount">0</div>
+                    <div class="calculation" id="calculationText"></div>
+                    <p><i class="fas fa-lightbulb"></i> Valor aproximado para comprar todas as cartas</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 style="color: #4cc9f0; margin-bottom: 15px;"><i class="fas fa-table"></i> Tabela de Conversão</h2>
+            <p style="margin-bottom: 15px; color: #b8b8d1;">Taxa de conversão de gemas para cartas (1 unidade):</p>
+            
+            <div class="conversion-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Raridade</th>
+                            <th>Gemas por carta</th>
+                            <th>Exemplo: 100 cartas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="rarity-badge badge-comum">Comum</span></td>
+                            <td>0.36 gemas</td>
+                            <td>36 gemas</td>
+                        </tr>
+                        <tr>
+                            <td><span class="rarity-badge badge-rara">Rara</span></td>
+                            <td>2.142322097378277 gemas</td>
+                            <td>~214 gemas</td>
+                        </tr>
+                        <tr>
+                            <td><span class="rarity-badge badge-épica">Épica</span></td>
+                            <td>21 gemas</td>
+                            <td>2.100 gemas</td>
+                        </tr>
+                        <tr>
+                            <td><span class="rarity-badge badge-lendária">Lendária</span></td>
+                            <td>210 gemas</td>
+                            <td>21.000 gemas</td>
+                        </tr>
+                        <tr>
+                            <td><span class="rarity-badge badge-campeão">Campeão</span></td>
+                            <td>400 gemas</td>
+                            <td>40.000 gemas</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Calculadora desenvolvida para Clash Royale | As gemas agora são coringas!</p>
+            <p style="margin-top: 5px;">© 2023 - Esta ferramenta não é oficial do Clash Royale</p>
+        </footer>
+    </div>
+
+    <script>
+        // Taxas de conversão
+        const conversionRates = {
+            comum: 0.36,
+            rara: 2.142322097378277,
+            épica: 21,
+            lendária: 210,
+            campeão: 400
+        };
+        
+        // Raridade atual selecionada
+        let selectedRarity = 'rara';
+        
+        // Elementos DOM
+        const rarityOptions = document.querySelectorAll('.rarity-option');
+        const cardQuantityInput = document.getElementById('cardQuantity');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resultDiv = document.getElementById('result');
+        const gemsCountElement = document.getElementById('gemsCount');
+        const calculationTextElement = document.getElementById('calculationText');
+        
+        // Selecionar raridade
+        rarityOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                // Remover classe selected de todas as opções
+                rarityOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                // Adicionar classe selected na opção clicada
+                option.classList.add('selected');
+                
+                // Atualizar raridade selecionada
+                selectedRarity = option.dataset.rarity;
+                
+                // Exemplo automático baseado na raridade
+                updateExampleQuantity();
+            });
+        });
+        
+        // Atualizar exemplo de quantidade baseado na raridade
+        function updateExampleQuantity() {
+            const examples = {
+                comum: 100,
+                rara: 371,
+                épica: 10,
+                lendária: 5,
+                campeão: 3
+            };
+            
+            cardQuantityInput.value = examples[selectedRarity];
+        }
+        
+        // Calcular gemas necessárias
+        function calculateGems() {
+            // Obter quantidade de cartas
+            const cardQuantity = parseInt(cardQuantityInput.value) || 1;
+            
+            // Validar entrada
+            if (cardQuantity < 1) {
+                cardQuantityInput.value = 1;
+                return;
+            }
+            
+            if (cardQuantity > 10000) {
+                cardQuantityInput.value = 10000;
+                return;
+            }
+            
+            // Calcular gemas necessárias
+            const rate = conversionRates[selectedRarity];
+            const gemsNeeded = cardQuantity * rate;
+            
+            // Arredondar para número inteiro
+            const roundedGems = Math.round(gemsNeeded);
+            
+            // Exibir resultado
+            gemsCountElement.textContent = roundedGems.toLocaleString('pt-BR');
+            
+            // Mostrar cálculo detalhado
+            calculationTextElement.textContent = 
+                `${cardQuantity.toLocaleString('pt-BR')} cartas × ${rate.toLocaleString('pt-BR', { maximumFractionDigits: 12 })} gemas = ${gemsNeeded.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} gemas`;
+            
+            // Exibir resultado com animação
+            resultDiv.classList.add('show');
+            
+            // Rolar suavemente para o resultado
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        // Event Listeners
+        calculateBtn.addEventListener('click', calculateGems);
+        
+        // Calcular ao pressionar Enter no campo de quantidade
+        cardQuantityInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                calculateGems();
+            }
+        });
+        
+        // Calcular ao carregar a página
+        window.addEventListener('load', () => {
+            calculateGems();
+        });
+        
+        // Calcular automaticamente ao mudar a quantidade
+        cardQuantityInput.addEventListener('input', calculateGems);
+        
+        // Exemplo interativo: atualizar cálculo quando a raridade mudar
+        rarityOptions.forEach(option => {
+            option.addEventListener('click', calculateGems);
+        });
+    </script>
+</body>
+</html>
